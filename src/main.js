@@ -36,6 +36,6 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   play.addEventListener("click", () =>{
-    invoke("abab");
+    invoke("play_mp3", {filePath: '../music/aboba4.mp3'}).catch((error) => alert(error));
   })
 });

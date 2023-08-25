@@ -4,9 +4,9 @@ use std::fs::File;
 use std::io::prelude::*;
 mod services;
 use std::io::BufReader;
-use std::time::Duration;
+
 use rodio::{Decoder, OutputStream, Sink};
-use rodio::source::{SineWave, Source};
+
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 
 #[tauri::command]
@@ -41,23 +41,19 @@ fn load() -> Result<String, String> {
 }
 
 #[tauri::command]
-fn abab(){
-    let (_stream, stream_handle) = OutputStream::try_default().unwrap();
-    let sink = Sink::try_new(&stream_handle).unwrap();
-
-    // Add a dummy source of the sake of the example.
-    let source = SineWave::new(440.0).take_duration(Duration::from_secs_f32(0.25)).amplify(0.20);
+fn play_mp3(file_path: &str) -> Result<(), String> {     
+    let (_stream, sink) = OutputStream::try_default().unwrap();
+    let file = File::open(file_path).map_err(|e| e.to_string())?;
+    let source = Decoder::new(BufReader::new(file)).map_err(|e| e.to_string())?;
+    let sink = Sink::try_new(&sink).map_err(|e| e.to_string())?;
     sink.append(source);
-    let source = SineWave::open()
-
-    // The sound plays in a separate thread. This call will block the current thread until the sink
-    // has finished playing all its queued sounds.
     sink.sleep_until_end();
+    Ok(())
 }
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![sync, load, abab])
+        .invoke_handler(tauri::generate_handler![sync, load, play_mp3])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
