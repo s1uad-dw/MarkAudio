@@ -1679,7 +1679,9 @@ dependencies = [
 name = "mark_audio"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
  "crossbeam-channel",
+ "log",
  "rodio",
  "serde",
  "serde_json",

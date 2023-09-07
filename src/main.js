@@ -17,11 +17,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
   invoke("load").then((json_str) => {
     var result = JSON.parse(json_str);
-    ip.value = result['ip'];
-    username.value = result['username'];
-    password.value = result['password'];
-    shopId.value = result['shop_id'];
-    marketingInterval.value = result['marketing_interval'];
+    ip.value = result['ip'] ? result['ip'] : "";
+    username.value = result['username'] ? result['username'] : "";
+    password.value = result['password'] ? result['password'] : "";
+    shopId.value = result['shop_id'] ? result['shop_id'] : "";
+    marketingInterval.value = result['marketing_interval'] ? result['marketing_interval'] : "";
   }).catch((error) => alert(error));
 
   
@@ -37,5 +37,8 @@ window.addEventListener("DOMContentLoaded", () => {
 
   play.addEventListener("click", () =>{
     invoke("play_mp3", {filePath: '../music/aboba4.mp3'}).catch((error) => alert(error));
+  })
+  pause.addEventListener("click", () =>{
+    invoke("pause", {filePath: '../music/aboba4.mp3'}).catch((error) => alert(error));
   })
 });
