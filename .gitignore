@@ -24,6 +24,8 @@ dist-ssr
 *.sw?
 
 /src-tauri/target/
-/marketing/
-/music/
-data.json
+/src/marketing/
+/src/music/
+/src-tauri/data.json
+/src-tauri/music/
+/src-tauri/marketing/

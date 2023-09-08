@@ -29,12 +29,18 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "com.tauri.фифи",
       "icon": [
         "icons/8x8.png",
         "icons/32x32.png",
-        "icons/128x128.png"
-      ]
+        "icons/128x128.png",
+        "icons/icon.ico"
+      ],
+      "windows": {
+        "wix": {
+          "language": "ru-RU"
+        }
+      }
     },
     "security": {
       "csp": null
