@@ -65,10 +65,16 @@ input{
 }
 
 input.short{
-  width: 110px;
+  width: 112px;
 }
 input.long{
   width: 244px;
+}
+input#shop_id{
+  width: 190px;
+}
+input#marketing_interval{
+  width: 34px;
 }
 
 button{

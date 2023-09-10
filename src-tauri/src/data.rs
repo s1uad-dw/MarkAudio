@@ -9,7 +9,8 @@ pub struct Data {
     password: String,
     shop_id: String,
     marketing_interval: String,
-    recent_tracks: Option<[String; 10]>
+    recent_tracks: Option<[String; 10]>,
+    pub start_playing_time: Option<String>
 }
 
 impl Data {
@@ -19,7 +20,8 @@ impl Data {
         password: String,
         shop_id: String,
         marketing_interval: String,
-        recent_tracks: Option<[String; 10]>
+        recent_tracks: Option<[String; 10]>,
+        start_playing_time: Option<String>
     ) -> Data {
         Data {
             ip: ip,
@@ -27,7 +29,8 @@ impl Data {
             password: password,
             shop_id: shop_id,
             marketing_interval: marketing_interval,
-            recent_tracks: recent_tracks
+            recent_tracks: recent_tracks,
+            start_playing_time: start_playing_time
         }
     }
 
@@ -50,7 +53,7 @@ impl Data {
             Ok(json_str) => json_str,
             Err(err) => return Err(err.to_string())
         };
-        let mut json_file = match File::open("./data.json"){
+        let mut json_file = match File::create("./data.json"){
             Ok(file) => file,
             Err(err) => return Err(err.to_string())
         };
