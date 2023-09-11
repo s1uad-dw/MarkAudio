@@ -1,7 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use services::create_if_not_exists;
-use chrono::{Utc, offset::FixedOffset, DateTime};
+// use chrono::{DateTime, Utc, FixedOffset, Duration};
 mod data;
 mod services;
 
@@ -22,6 +22,7 @@ fn check_sources() -> Result<(), String> {
     }
     Ok(())
 }
+
 #[tauri::command]
 fn load() -> Result<String, String> {
     let data = match data::Data::load_data() {
@@ -77,29 +78,41 @@ fn get_local_files() -> Result<String, String> {
     }
 }
 
-#[tauri::command]
-fn write_time() -> Result<(), String>{
-    match data::Data::load_data() {
-        Ok(mut data) => {
-            data.start_playing_time = Some(Utc::now().with_timezone(&FixedOffset::east(3 * 3600)).to_string());
-            data.save();
-            Ok(())
-        }
-        Err(err) => Err(err.to_string())
-    }
-}
-
 // #[tauri::command]
-// fn get_time_difference(){
+// fn write_time() -> Result<(), String>{
 //     match data::Data::load_data() {
 //         Ok(mut data) => {
-//             let start_time_str = match data.start_playing_time{
-//                 Some(time) => time,
-//                 _ => Err("Ошибка при считывании времени старта проигрывания")
-//             };
-//             let start_time = DateTime::parse_from_str(&start_time_str, "%Y-%m-%d %H:%M:%S%");
+//             data.start_playing_time = Some(Utc::now().with_timezone(&FixedOffset::east(3 * 3600)).to_string());
+//             data.save()?;
+//             Ok(())
 //         }
 //         Err(err) => Err(err.to_string())
+//     }
+// }
+
+// #[tauri::command]
+// fn get_time_difference() -> Result<i32, String>{
+//     match data::Data::load_data() {
+//         Ok(data) => {
+//             let start_time_str = match data.start_playing_time{
+//                 Some(time) => time,
+//                 None => return Err("Ошибка при считывании времени старта проигрывания".to_string()),
+//             };
+//             let current_time: DateTime<Utc> = Utc::now();
+//             match DateTime::parse_from_str(&start_time_str, "%Y-%m-%d %H:%M:%S%.f %z"){
+//                 Ok(start_time) => {
+//                     let start_time = start_time.with_timezone(&Utc);
+//                     println!("{}", start_time.to_string());
+//                     let duration: Duration = current_time.signed_duration_since(start_time);
+//                     match Some(duration.num_minutes() as i32){
+//                         Some(diff) => return Ok(diff),
+//                         None => return Err("Ошибка при считывании времени старта проигрывания".to_string()),
+//                     }
+//                 },
+//                 Err(err) => return Err(format!("Ошибка при считывании времени старта проигрывания{}", err)),
+//             }
+//         },
+//         Err(err) => return Err(format!("Ошибка при считывании времени старта проигрывания{}", err)),
 //     }
 // }
 
@@ -110,8 +123,7 @@ fn main() {
             check_sources,
             load,
             save,
-            get_local_files,
-            write_time
+            get_local_files
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -48,6 +48,7 @@ impl Data {
         };
         file
     }
+    
     pub fn save(&self) -> Result<(), String>{
         let json_str:String = match serde_json::to_string(self){
             Ok(json_str) => json_str,

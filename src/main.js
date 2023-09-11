@@ -37,9 +37,7 @@ window.addEventListener("DOMContentLoaded", () => {
         neet_alert = true
       }
     })
-    if (neet_alert) {
-      alert('Не все поля заполнены!');
-    }
+    if (neet_alert) alert('Не все поля заполнены!');
   }
   [ip, username, password, shopId, marketingInterval].forEach(input => {
     input.addEventListener('change', () => {
@@ -62,7 +60,12 @@ window.addEventListener("DOMContentLoaded", () => {
     check_inputs()// Проверяем всё ли заполнено
     invoke('get_local_files').then(local_files_json => {
       let local_files = JSON.parse(local_files_json); // получаем список локальных файлов
-      invoke('write_time').catch((error) => alert(error))
+      function enable_player(minutes) {
+        const deadline = new Date(Date.now() + minutes * 60 * 1000);
+        console.log(deadline);
+
+      }
+      enable_player(3)
       // while ((Date() - start_playing_date)/1000<5){
       //   console.log('abababb')
       // }
