@@ -8,9 +8,7 @@ pub struct Data {
     username: String,
     password: String,
     shop_id: String,
-    marketing_interval: String,
-    recent_tracks: Option<[String; 10]>,
-    pub start_playing_time: Option<String>
+    marketing_interval: String
 }
 
 impl Data {
@@ -19,18 +17,14 @@ impl Data {
         username: String,
         password: String,
         shop_id: String,
-        marketing_interval: String,
-        recent_tracks: Option<[String; 10]>,
-        start_playing_time: Option<String>
+        marketing_interval: String
     ) -> Data {
         Data {
             ip: ip,
             username: username,
             password: password,
             shop_id: shop_id,
-            marketing_interval: marketing_interval,
-            recent_tracks: recent_tracks,
-            start_playing_time: start_playing_time
+            marketing_interval: marketing_interval
         }
     }
 

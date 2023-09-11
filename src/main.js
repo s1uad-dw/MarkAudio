@@ -2,63 +2,80 @@ const { invoke } = window.__TAURI__.tauri;
 
 let greetInputEl;
 let greetMsgEl;
-let json_data = "";
 
+var inputs = []
 window.addEventListener("DOMContentLoaded", () => {
+  var ip = document.querySelector("#ip");
+  var username = document.querySelector("#username");
+  var password = document.querySelector("#password");
+  var shop_id= document.querySelector("#shop_id");
+  var marketing_interval = document.querySelector("#marketing_interval");
+
   const play = document.querySelector("#play");
   const pause = document.querySelector("#pause");
-  invoke("check_sources").catch((error) => alert(error));
-  Object.values(get_inputs()).forEach(input => {
-    input.addEventListener('change', () => {
-      save()
-    })
-  });
   load_data()
-  play.addEventListener('click', enable_playing)
+  invoke("check_sources").catch((error) => alert(error));
+  [ip, username, password, shop_id, marketing_interval].forEach(input => {
+    input.addEventListener('change', save)
+  });
+  player.addEventListener('canplaythrough', function(){player.play()})
+  play.addEventListener('click', play_music)
   pause.addEventListener('click', () => {
   })
 });
 
-var local_files = {}
 
-async function enable_playing() {
+var local_files = {}
+var player = document.querySelector(".player")
+var playing;
+
+
+async function play_music() {
+  console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
   check_inputs()// Проверяем всё ли заполнено
-  await get_local_files()
-  console.log(local_files)
-  //aaa
-  //   invoke('get_local_files').then(local_files_json => {
-  //     let local_files = JSON.parse(local_files_json); // получаем список локальных файлов
-  //     function enable_player(minutes) {
-  //       const deadline = new Date(Date.now() + minutes * 60 * 1000); // Вычисляем время окончания проигрывания музыки
-  //       const player = document.querySelector(".player")
-  //       setInterval(() => {
-  //         if (Date.now() <= deadline) {
-  //           player.src = `./music/${local_files[0]}`
-  //           local_files = local_files.slice(1)
-  //         } else {
-  //           clearInterval()
-  //         }
-  //       }, 1000)}
-  //       enable_player(0.1)
-  //       // while ((Date() - start_playing_date)/1000<5){
-  //       //   console.log('abababb')
-  //       // }
-  //       // цикл{
-  //       // чекаем норм ли треком (если не норм то докачиваем)
-  //       // меняем в плеере src на первый из актуальных
-  //       // стартуем
-  //       // ждем окончания
-  //       // }
-  //     }).catch((error) => alert(error))
+  const player = document.querySelector(".player")
+  const marketingInterval = document.querySelector("#marketing_interval");
+  playing = setTimeout(async function () {//цикол бесконечный
+    const deadline = new Date(Date.now() + marketingInterval.value * 60 * 1000);//получаем дедлайн
+    await get_local_files()//получаем список локальных файлов
+    //чекаем норм ли треков
+
+    if (local_files[0].length < 0) {//не норм
+      //докачиваем столько треков сколько не хватает
+    } else {//норм
+      // player.src = `music/${local_files[0][0]}`//то ставим актуальные src плееру
+      player.src = 'abab2.mp3'
+      local_files[0] = local_files[0].slice(1)//удаляем трек который поставили в src
+      console.log(player.src, Date.now() > deadline)
+      //вызываем rust функцию для удаления кала
+      setInterval(function () {
+        //чекаем не дедлайн ли
+        if (Date.now() > deadline && player.paused) {//дедлайнa
+          clearInterval()
+          play_marketing()
+          play_music()
+          //играем рекламу
+        }else if (Date.now() < deadline && player.paused){
+          play_music()
+        }
+      }, 1000)
+    }
+  })
 }
+
+function play_marketing(){
+  player.src = 'abab2.mp3'
+  console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+}
+
 async function get_local_files() {
   await invoke('get_local_files').then(local_files_json => {
     local_files = JSON.parse(local_files_json)
   }).catch((error) => alert(error))
 }
 function check_inputs() {
-  let inputs = Object.values(get_inputs())
   let neet_alert = false
+  let inputs = [ip, username, password, shop_id, marketing_interval]
   inputs.forEach(input => {
     if (input.value == "") {
       neet_alert = true
@@ -67,34 +84,23 @@ function check_inputs() {
   if (neet_alert) alert('Не все поля заполнены!');
 }
 
-function get_inputs() {
-  const ip = document.querySelector("#ip");
-  const username = document.querySelector("#username");
-  const password = document.querySelector("#password");
-  const shopId = document.querySelector("#shop_id");
-  const marketingInterval = document.querySelector("#marketing_interval");
-  return { 'ip': ip, 'username': username, 'password': password, 'shopId': shopId, 'marketingInterval': marketingInterval }
-}
-
-function save(){
-  let inputs = get_inputs()
+function save() {
   invoke("save", {
-    ip: inputs.ip.value,
-    username: inputs.username.value,
-    password: inputs.password.value,
-    shopId: inputs.shopId.value,
-    marketingInterval: inputs.marketingInterval.value
+    ip: ip.value,
+    username: username.value,
+    password: password.value,
+    shopId: shop_id.value,
+    marketingInterval: marketing_interval.value
   }).catch((error) => alert(error))
 }
 
 function load_data() {
-  let inputs = get_inputs()
   invoke("load").then((json_data) => {
     var data = JSON.parse(json_data)
-    inputs.ip.value = data.ip;
-    inputs.username.value = data.username;
-    inputs.password.value = data.password;
-    inputs.shopId.value = data['shop_id'];
-    inputs.marketingInterval.value = data['marketing_interval']
+    ip.value = data.ip;
+    username.value = data.username;
+    password.value = data.password;
+    shop_id.value = data['shop_id'];
+    marketing_interval.value = data['marketing_interval']
   }).catch((error) => console.error(error))
 }

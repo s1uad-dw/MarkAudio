@@ -1,6 +1,4 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
-use services::create_if_not_exists;
 // use chrono::{DateTime, Utc, FixedOffset, Duration};
 mod data;
 mod services;
@@ -15,7 +13,7 @@ fn check_sources() -> Result<(), String> {
         (services::PathType::File, "./data.json"),
     ];
     for source in sources {
-        match create_if_not_exists(source.0, source.1) {
+        match services::create_if_not_exists(source.0, source.1) {
             Ok(()) => (),
             Err(err) => return Err(err.into()),
         }
@@ -47,17 +45,14 @@ fn save(
     username: String,
     password: String,
     shop_id: String,
-    marketing_interval: String,
-    recent_tracks: Option<[String; 10]>,
-    start_playing_time: Option<String>
+    marketing_interval: String
 ) -> Result<(), String> {
     let data = data::Data::new(
         ip,
         username,
         password,
         shop_id,
-        marketing_interval,
-        recent_tracks, start_playing_time
+        marketing_interval
     );
     data.save()
 }
