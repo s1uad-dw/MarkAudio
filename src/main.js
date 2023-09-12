@@ -20,8 +20,9 @@ window.addEventListener("DOMContentLoaded", () => {
   });
   player.addEventListener('canplaythrough', function () { player.play() })
   play.addEventListener('click', play_music)
-  pause.addEventListener('click', () => {
-  })
+  // pause.addEventListener('click', () => {
+
+  // })
 });
 
 
@@ -32,27 +33,38 @@ var playing;
 
 async function play_music() {
   check_inputs()// Проверяем всё ли заполнено
-  const player = document.querySelector(".player")
   const marketingInterval = document.querySelector("#marketing_interval");
   playing = setTimeout(async function () {//цикол бесконечный
     const deadline = new Date(Date.now() + marketingInterval.value * 60 * 1000);//получаем дедлайн
     await get_local_files()//получаем список локальных файлов
     //чекаем норм ли треков
-    if (local_files[0].length < 0) {//не норм
-      //докачиваем столько треков сколько не хватает
+    if (local_files[0].length < 5) {//не норм
+      console.log(local_files[0].length < 5, 6 - local_files[0].length)
+      await invoke('download_missing_tracks', {
+        ip: ip.value,
+        username: username.value,
+        password: password.value,
+        quantity: 5 - local_files[0].length
+      }).catch((error) => alert(error))
+      play_music()
     } else {//норм
       player.src = `music/${local_files[0][0]}`//то ставим актуальные src плееру
-      local_files[0] = local_files[0].slice(1)//удаляем трек который поставили в src
-      console.log(player.src, Date.now() > deadline)
-      invoke('remove_file', { path: `music/${local_files[0][0]}` }).catch((error) => alert(error))
-      setInterval(function () {
+      setInterval(() => {
         //чекаем не дедлайн ли
+        console.log('-------------------------------------')
+        console.log(Date.now() > deadline && player.paused)
+        console.log(Date.now() < deadline && player.paused)
+        console.log(player.src)
         if (Date.now() > deadline && player.paused) {//дедлайнa
+          local_files[0] = local_files[0].slice(1)//удаляем трек который поставили в src
+          invoke('remove_file', { path: `music/${local_files[0][0]}` }).catch((error) => alert(error))
           clearInterval()
           play_marketing()
           play_music()
           //играем рекламу
         } else if (Date.now() < deadline && player.paused) {
+          local_files[0] = local_files[0].slice(1)//удаляем трек который поставили в src
+          invoke('remove_file', { path: `music/${local_files[0][0]}` }).catch((error) => alert(error))
           play_music()
         }
       }, 1000)

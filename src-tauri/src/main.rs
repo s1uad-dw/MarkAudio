@@ -84,7 +84,7 @@ fn download_missing_tracks(
     quantity: i32,
 ) -> Result<(), String> {
     let server = server::Server::new(ip, username, password);
-    server.download_files(remote_dir, tracks, local_dir)
+    return server.download_missing_tracks(quantity)
 }
 
 fn main() {
@@ -94,7 +94,8 @@ fn main() {
             load,
             save,
             get_local_files,
-            remove_file
+            remove_file,
+            download_missing_tracks
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
