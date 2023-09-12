@@ -8,7 +8,7 @@ window.addEventListener("DOMContentLoaded", () => {
   var ip = document.querySelector("#ip");
   var username = document.querySelector("#username");
   var password = document.querySelector("#password");
-  var shop_id= document.querySelector("#shop_id");
+  var shop_id = document.querySelector("#shop_id");
   var marketing_interval = document.querySelector("#marketing_interval");
 
   const play = document.querySelector("#play");
@@ -18,7 +18,7 @@ window.addEventListener("DOMContentLoaded", () => {
   [ip, username, password, shop_id, marketing_interval].forEach(input => {
     input.addEventListener('change', save)
   });
-  player.addEventListener('canplaythrough', function(){player.play()})
+  player.addEventListener('canplaythrough', function () { player.play() })
   play.addEventListener('click', play_music)
   pause.addEventListener('click', () => {
   })
@@ -31,7 +31,6 @@ var playing;
 
 
 async function play_music() {
-  console.log('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
   check_inputs()// Проверяем всё ли заполнено
   const player = document.querySelector(".player")
   const marketingInterval = document.querySelector("#marketing_interval");
@@ -39,15 +38,13 @@ async function play_music() {
     const deadline = new Date(Date.now() + marketingInterval.value * 60 * 1000);//получаем дедлайн
     await get_local_files()//получаем список локальных файлов
     //чекаем норм ли треков
-
     if (local_files[0].length < 0) {//не норм
       //докачиваем столько треков сколько не хватает
     } else {//норм
-      // player.src = `music/${local_files[0][0]}`//то ставим актуальные src плееру
-      player.src = 'abab2.mp3'
+      player.src = `music/${local_files[0][0]}`//то ставим актуальные src плееру
       local_files[0] = local_files[0].slice(1)//удаляем трек который поставили в src
       console.log(player.src, Date.now() > deadline)
-      //вызываем rust функцию для удаления кала
+      invoke('remove_file', { path: `music/${local_files[0][0]}` }).catch((error) => alert(error))
       setInterval(function () {
         //чекаем не дедлайн ли
         if (Date.now() > deadline && player.paused) {//дедлайнa
@@ -55,7 +52,7 @@ async function play_music() {
           play_marketing()
           play_music()
           //играем рекламу
-        }else if (Date.now() < deadline && player.paused){
+        } else if (Date.now() < deadline && player.paused) {
           play_music()
         }
       }, 1000)
@@ -63,9 +60,8 @@ async function play_music() {
   })
 }
 
-function play_marketing(){
-  player.src = 'abab2.mp3'
-  console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+function play_marketing() {
+  player.src = `marketing/${local_files[1][0]}`
 }
 
 async function get_local_files() {
